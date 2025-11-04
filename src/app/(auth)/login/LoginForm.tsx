@@ -55,11 +55,12 @@ const LoginForm: React.FC = () => {
 			setError(res);
 			return;
 		}
+		console.log(res.role === "admin" ? "/admin/users" : "/");
 
 		dispatch(setUser(res));
 		setIsLoading(false);
 		setError(null);
-		router.replace(next || (res.role === "admin" ? "/admin/users" : "/"));
+		router.replace(res.role === "admin" ? "/admin/users" : "/");
 	};
 	return (
 		<Form {...form}>
