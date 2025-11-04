@@ -1,10 +1,9 @@
 "use client";
-import React from "react";
+import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useSigninMutation } from "@/store/api/auth";
 import {
 	Button,
 	ErrorMessage,
@@ -39,29 +38,37 @@ const LoginForm: React.FC = () => {
 	const router = useRouter();
 	const searchParams = useSearchParams();
 	const next = searchParams?.get("next");
-	const [signin, { isLoading, isSuccess, error }] = useSigninMutation();
+	const [isLoading, setIsLoading] = useState(false);
+	const [error, setError] = useState<Error | null>(null);
 	const onSubmit = async (data: LoginFormInputs) => {
-		const { data: user, error } = await signin(data);
-		if (error || !user) return;
-		await fetch("/api/proxy/auth/login", {
+		setIsLoading(true);
+		setError(null);
+		const req = await fetch("/api/proxy/auth/login", {
 			method: "POST",
-			credentials: "include", // critical for cookies
+			credentials: "include",
 			headers: { "Content-Type": "application/json" },
 			body: JSON.stringify({ email: data.email, password: data.password }),
 		});
-		dispatch(setUser(user!));
-		// replace to avoid creating a back entry to login
-		router.replace(next || (user.role === "admin" ? "/admin/users" : "/"));
+		const res = await req.json();
+		if (res?.error) {
+			setIsLoading(false);
+			setError(res);
+			return;
+		}
+
+		dispatch(setUser(res));
+		setIsLoading(false);
+		setError(null);
+		router.replace(next || (res.role === "admin" ? "/admin/users" : "/"));
 	};
 	return (
 		<Form {...form}>
 			<form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-				{/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
-				{error && <ErrorMessage message={(error as any)?.data?.message} />}
+				{error && <ErrorMessage message={error?.message} />}
 				<FormField
 					control={form.control}
 					name="email"
-					disabled={isLoading || isSuccess}
+					disabled={isLoading}
 					render={({ field }) => (
 						<FormItem>
 							<FormLabel>Email</FormLabel>
@@ -75,7 +82,7 @@ const LoginForm: React.FC = () => {
 				<FormField
 					control={form.control}
 					name="password"
-					disabled={isLoading || isSuccess}
+					disabled={isLoading}
 					render={({ field }) => (
 						<FormItem>
 							<FormLabel>Password</FormLabel>
@@ -94,11 +101,7 @@ const LoginForm: React.FC = () => {
 						Forgot Password?
 					</Link>
 				</div>
-				<Button
-					disabled={isLoading || isSuccess}
-					type="submit"
-					className="w-full"
-				>
+				<Button disabled={isLoading} type="submit" className="w-full">
 					Log In
 				</Button>
 			</form>

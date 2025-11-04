@@ -36,10 +36,7 @@ async function handleProxy(
 	req: NextRequest,
 	params: Promise<{ path: string[] }>
 ) {
-	const { path } = await params;
-
 	const targetUrl = `${process.env.NEXT_PUBLIC_API_BASE_URL}/auth/signin`;
-	console.log(path, targetUrl);
 
 	const body =
 		req.method !== "GET" && req.method !== "HEAD"

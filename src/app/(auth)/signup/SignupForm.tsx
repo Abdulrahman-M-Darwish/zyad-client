@@ -81,7 +81,6 @@ const SignupForm: React.FC = () => {
 				...data,
 				age: +age,
 			});
-			console.log(error);
 			if (error) return;
 			setCookie("user", { ...data, age: Number(age) }, { maxAge: 60 * 15 }); // 15 minutes
 			router.push("/signup/verify");
