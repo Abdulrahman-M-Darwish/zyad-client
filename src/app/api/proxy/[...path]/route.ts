@@ -4,38 +4,23 @@ export async function middleware(request: NextRequest) {
 	request.headers.set("x-forwarded-host", request.headers.get("host") || "");
 }
 
-export async function GET(
-	req: NextRequest,
-	{ params }: { params: Promise<{ path: string[] }> }
-) {
-	return handleProxy(req, params);
+export async function GET(req: NextRequest) {
+	return handleProxy(req);
 }
 
-export async function POST(
-	req: NextRequest,
-	{ params }: { params: Promise<{ path: string[] }> }
-) {
-	return handleProxy(req, params);
+export async function POST(req: NextRequest) {
+	return handleProxy(req);
 }
 
-export async function PUT(
-	req: NextRequest,
-	{ params }: { params: Promise<{ path: string[] }> }
-) {
-	return handleProxy(req, params);
+export async function PUT(req: NextRequest) {
+	return handleProxy(req);
 }
 
-export async function DELETE(
-	req: NextRequest,
-	{ params }: { params: Promise<{ path: string[] }> }
-) {
-	return handleProxy(req, params);
+export async function DELETE(req: NextRequest) {
+	return handleProxy(req);
 }
 
-async function handleProxy(
-	req: NextRequest,
-	params: Promise<{ path: string[] }>
-) {
+async function handleProxy(req: NextRequest) {
 	const targetUrl = `${process.env.NEXT_PUBLIC_API_BASE_URL}/auth/signin`;
 
 	const body =

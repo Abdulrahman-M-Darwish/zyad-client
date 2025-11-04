@@ -2,6 +2,7 @@
 import StoreProvider from "@/store/redux";
 import React from "react";
 import { Protected } from "./Protected";
+import { SidebarProvider } from "./ui/sidebar";
 
 type Props = {
 	children: React.ReactNode;
@@ -10,7 +11,9 @@ type Props = {
 export const Providers: React.FC<Props> = ({ children }) => {
 	return (
 		<StoreProvider>
-			<Protected>{children}</Protected>
+			<Protected>
+				<SidebarProvider defaultOpen>{children}</SidebarProvider>
+			</Protected>
 		</StoreProvider>
 	);
 };
