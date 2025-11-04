@@ -77,10 +77,12 @@ const SignupForm: React.FC = () => {
 		...data
 	}: SignupFormInputs) => {
 		try {
-			await signup({
+			const { error } = await signup({
 				...data,
 				age: +age,
-			}).unwrap();
+			});
+			console.log(error);
+			if (error) return;
 			setCookie("user", { ...data, age: Number(age) }, { maxAge: 60 * 15 }); // 15 minutes
 			router.push("/signup/verify");
 		} catch (err) {
