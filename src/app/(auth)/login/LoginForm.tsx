@@ -43,6 +43,12 @@ const LoginForm: React.FC = () => {
 	const onSubmit = async (data: LoginFormInputs) => {
 		const { data: user, error } = await signin(data);
 		if (error || !user) return;
+		await fetch("/api/proxy/auth/login", {
+			method: "POST",
+			credentials: "include", // critical for cookies
+			headers: { "Content-Type": "application/json" },
+			body: JSON.stringify({ email: data.email, password: data.password }),
+		});
 		dispatch(setUser(user!));
 		// replace to avoid creating a back entry to login
 		router.replace(next || (user.role === "admin" ? "/admin/users" : "/"));
