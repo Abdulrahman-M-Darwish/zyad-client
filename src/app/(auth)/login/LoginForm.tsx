@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import {
 	Button,
 	ErrorMessage,
@@ -36,8 +36,6 @@ const LoginForm: React.FC = () => {
 	});
 	const dispatch = useAppDispatch();
 	const router = useRouter();
-	const searchParams = useSearchParams();
-	const next = searchParams?.get("next");
 	const [isLoading, setIsLoading] = useState(false);
 	const [error, setError] = useState<Error | null>(null);
 	const onSubmit = async (data: LoginFormInputs) => {

@@ -1,4 +1,5 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import { getCookies } from "cookies-next";
 
 export const api = createApi({
 	baseQuery: fetchBaseQuery({
@@ -7,5 +8,6 @@ export const api = createApi({
 	}),
 	reducerPath: "api",
 	tagTypes: ["user", "levels", "sections"],
+
 	endpoints: () => ({}),
 });

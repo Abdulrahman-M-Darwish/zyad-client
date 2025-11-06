@@ -25,8 +25,12 @@ function isPublicPath(pathname: string) {
 export async function middleware(req: NextRequest) {
 	const { nextUrl, cookies: reqCookies } = req;
 	const { pathname } = nextUrl;
+	const cookiesText = reqCookies
+		.getAll()
+		.map((cookie) => `${cookie.name}=${cookie.value}`)
+		.join(";");
+	req.headers.set("cookies", cookiesText);
 	const userRole = await getCookie("userRole", { cookies });
-
 	// allow public paths
 	if (isPublicPath(pathname) || pathname.startsWith("/api"))
 		return NextResponse.next();
