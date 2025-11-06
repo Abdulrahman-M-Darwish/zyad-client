@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -18,6 +18,7 @@ import {
 import { useAppDispatch } from "@/store/redux";
 import { setUser } from "@/store/features/userSlice";
 import Link from "next/link";
+import { useSigninMutation } from "@/store/api/auth";
 
 const loginSchema = z.object({
 	email: z.string().min(1, " "),
@@ -36,34 +37,18 @@ const LoginForm: React.FC = () => {
 	});
 	const dispatch = useAppDispatch();
 	const router = useRouter();
-	const [isLoading, setIsLoading] = useState(false);
-	const [error, setError] = useState<Error | null>(null);
+	const [signin, { isLoading, error }] = useSigninMutation();
 	const onSubmit = async (data: LoginFormInputs) => {
-		setIsLoading(true);
-		setError(null);
-		const req = await fetch("/api/proxy/auth/login", {
-			method: "POST",
-			credentials: "include",
-			headers: { "Content-Type": "application/json" },
-			body: JSON.stringify({ email: data.email, password: data.password }),
-		});
-		const res = await req.json();
-		if (res?.error) {
-			setIsLoading(false);
-			setError(res);
-			return;
-		}
-		console.log(res.role === "admin" ? "/admin/users" : "/");
-
-		dispatch(setUser(res));
-		setIsLoading(false);
-		setError(null);
-		router.replace(res.role === "admin" ? "/admin/users" : "/");
+		const { data: user, error } = await signin(data);
+		if (error) return;
+		dispatch(setUser(user.user));
+		router.replace(user.user.role === "admin" ? "/admin/users" : "/");
 	};
 	return (
 		<Form {...form}>
 			<form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-				{error && <ErrorMessage message={error?.message} />}
+				{/* eslint-disable-next-line @typescript-eslint/no-explicit-any*/}
+				{error && <ErrorMessage message={(error as any)?.data?.message} />}
 				<FormField
 					control={form.control}
 					name="email"
