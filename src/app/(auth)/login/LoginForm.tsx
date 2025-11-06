@@ -19,6 +19,7 @@ import { useAppDispatch } from "@/store/redux";
 import { setUser } from "@/store/features/userSlice";
 import Link from "next/link";
 import { useSigninMutation } from "@/store/api/auth";
+import { setCookie } from "cookies-next";
 
 const loginSchema = z.object({
 	email: z.string().min(1, " "),
@@ -42,6 +43,7 @@ const LoginForm: React.FC = () => {
 		const { data: user, error } = await signin(data);
 		if (error) return;
 		dispatch(setUser(user.user));
+		setCookie("userRole", user.user.role);
 		router.replace(user.user.role === "admin" ? "/admin/users" : "/");
 	};
 	return (

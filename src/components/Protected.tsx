@@ -6,6 +6,7 @@ import { setUser } from "@/store/features/userSlice";
 import { useLazyGetMeQuery } from "@/store/api/user";
 import { PUBLIC_PATHS } from "@/lib/constants";
 import { tokenManager } from "@/store/api";
+import { setCookie } from "cookies-next";
 
 type Props = {
 	children?: React.ReactNode;
@@ -24,8 +25,10 @@ export const Protected: React.FC<Props> = ({ children }) => {
 
 	useEffect(() => {
 		// If user already loaded, skip
-		if (user) return;
-
+		if (user) {
+			setCookie("userRole", user.role);
+			return;
+		}
 		let mounted = true;
 
 		const checkAuth = async () => {
