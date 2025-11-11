@@ -78,12 +78,7 @@ const LevelDetails = () => {
 		: 0;
 
 	const highestCompletedSectionOrder = user.completedSections
-		? Math.max(
-				...user.completedSections
-					.filter((s) => (s.level as unknown as string) === level._id)
-					.map((section) => section.order),
-				0
-		  )
+		? Math.max(...user.completedSections.map((section) => section.order), 0)
 		: 0;
 
 	// Check if this level is locked
@@ -181,6 +176,7 @@ const LevelDetails = () => {
 							(completedSection) => completedSection._id === section._id
 						);
 						const isLocked = section.order > highestCompletedSectionOrder + 1;
+
 						return (
 							<Link
 								href={`/levels/${level._id}/sections/${section._id}`}
