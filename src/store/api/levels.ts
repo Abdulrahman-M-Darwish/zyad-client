@@ -42,10 +42,14 @@ const levelsApi = api.injectEndpoints({
 		}),
 
 		// Delete level
-		deleteLevel: build.mutation<{ success: boolean }, string>({
-			query: (id) => ({
+		deleteLevel: build.mutation<
+			{ success: boolean },
+			{ id: string; order: number }
+		>({
+			query: ({ id, order }) => ({
 				url: `/levels/${id}`,
 				method: "DELETE",
+				body: { order },
 			}),
 			invalidatesTags: ["levels"],
 		}),

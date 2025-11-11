@@ -11,15 +11,17 @@ import {
 import { useAppDispatch, useAppSelector } from "@/store/redux";
 import { setUser } from "@/store/features/userSlice";
 import { Sun, Moon, LogOut, ChevronDown } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { SidebarTrigger } from "./ui/sidebar";
 import { tokenManager } from "@/store/api";
 import { deleteCookie } from "cookies-next";
+import Image from "next/image";
 
 export const Navbar: React.FC = () => {
 	const dispatch = useAppDispatch();
 	const user = useAppSelector((s) => s.user.user);
 	const router = useRouter();
+	const pathname = usePathname();
 	const [isDark, setIsDark] = useState<boolean>(() => {
 		try {
 			const stored = localStorage.getItem("theme");
@@ -55,13 +57,21 @@ export const Navbar: React.FC = () => {
 	return (
 		<header className="sticky top-0 z-40 border-b bg-background shadow-primary/5 shadow-lg">
 			<div className="max-w-7xl mx-auto flex items-center justify-between px-4 py-2">
-				{user.role === "admin" && <SidebarTrigger />}
+				{pathname.startsWith("/admin") && user.role === "admin" && (
+					<SidebarTrigger className="md:hidden" />
+				)}
 				<div className="flex mr-auto items-center gap-3">
 					<Link
 						href="/"
 						className="flex items-center gap-3 text-inherit no-underline"
 					>
-						<span className="font-semibold text-sm">Zyad</span>
+						<Image
+							src="/logo.jpeg"
+							alt="Zyad Logo"
+							width={60}
+							height={60}
+							className="object-contain"
+						/>
 					</Link>
 				</div>
 

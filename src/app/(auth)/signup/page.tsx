@@ -9,7 +9,7 @@ const Signup = () => {
 			<div className="hidden md:flex md:w-1/2 bg-gray-100 items-center justify-center relative">
 				<Image
 					fill
-					src="/landing-discover-bg.jpg"
+					src="/call-to-action.jpg"
 					unoptimized
 					alt="Real Estate"
 					className="object-cover object-center brightness-[40%]"

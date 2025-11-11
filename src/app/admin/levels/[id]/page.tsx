@@ -20,8 +20,8 @@ const Level = () => {
 	const [deleteLevel, { isLoading: isDeleting }] = useDeleteLevelMutation();
 	const { data: level, isLoading, isError } = useGetLevelQuery(id ?? skipToken);
 	const handleDelete = async () => {
-		if (!id || isDeleting) return;
-		await deleteLevel(id);
+		if (!level || isDeleting) return;
+		await deleteLevel({ id, order: level.order });
 		router.push("/admin/levels");
 	};
 
