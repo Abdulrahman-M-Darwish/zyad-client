@@ -2,6 +2,7 @@ export * from "./FeatureCard";
 export * from "./ErrorMessage";
 export * from "./Providers";
 export * from "./Protected";
+export * from "./FeedbackQuestionnaire";
 export * from "./ui/alert";
 export * from "./ui/button";
 export * from "./ui/input-otp";

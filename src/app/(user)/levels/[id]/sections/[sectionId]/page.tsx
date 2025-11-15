@@ -22,6 +22,11 @@ import "next-cloudinary/dist/cld-video-player.css";
 import { useAppDispatch, useAppSelector } from "@/store/redux";
 import { setUser } from "@/store/features/userSlice";
 import { downloadCloudinaryVideo } from "@/lib/utils";
+import {
+  FeedbackQuestionnaire,
+  type FeedbackData,
+} from "@/components/FeedbackQuestionnaire";
+import { toast } from "sonner";
 
 const SectionDetails = () => {
   const params = useParams();
@@ -29,6 +34,7 @@ const SectionDetails = () => {
   const levelId = params?.id as string;
   const router = useRouter();
   const [hasWatched, setHasWatched] = useState(false);
+  const [showQuestionnaire, setShowQuestionnaire] = useState(false);
 
   const { data: sections } = useGetSectionsQuery(levelId ?? skipToken);
   const {
@@ -99,6 +105,25 @@ const SectionDetails = () => {
     const updatedUser = await getUser().unwrap();
     dispatch(setUser(updatedUser));
     setHasWatched(true);
+ 
+    if (isLastSection) {
+      setShowQuestionnaire(true);
+    }
+  };
+
+  const handleFeedbackSubmit = (feedback: FeedbackData) => {
+    // TODO: Send feedback to backend
+    console.log("Feedback submitted:", feedback);
+ 
+
+     toast.success("شكراً لك!", {
+      description: "تم إرسال تقييمك بنجاح. نقدر وقتك وملاحظاتك القيمة.",
+      duration: 4000,
+    });
+  };
+
+  const handleSkipFeedback = () => {
+    setShowQuestionnaire(false);
   };
 
   const handleNext = () => {
@@ -179,6 +204,13 @@ const SectionDetails = () => {
           </p>
         </CardContent>
       </Card>
+ 
+      {isLastSection && showQuestionnaire && (hasWatched || isCompleted) && (
+        <FeedbackQuestionnaire
+          onSubmit={handleFeedbackSubmit}
+          onSkip={handleSkipFeedback}
+        />
+      )}
 
       {/* Navigation */}
       <div className="flex justify-between items-center pt-4">
