@@ -17,7 +17,7 @@ import {
 import { Skeleton } from "@/components/ui/skeleton";
 import Link from "next/link";
 import { CldVideoPlayer } from "next-cloudinary";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import "next-cloudinary/dist/cld-video-player.css";
 import { useAppDispatch, useAppSelector } from "@/store/redux";
 import { setUser } from "@/store/features/userSlice";
@@ -34,7 +34,7 @@ const SectionDetails = () => {
   const levelId = params?.id as string;
   const router = useRouter();
   const [hasWatched, setHasWatched] = useState(false);
-  const [showQuestionnaire, setShowQuestionnaire] = useState(false);
+  const [feedbackSubmitted, setFeedbackSubmitted] = useState(false);
 
   const { data: sections } = useGetSectionsQuery(levelId ?? skipToken);
   const {
@@ -48,7 +48,14 @@ const SectionDetails = () => {
   const isCompleted = user?.completedSections?.map((s) => s._id).includes(id);
   const dispatch = useAppDispatch();
 
-  // Loading state
+  useEffect(() => {
+    if (levelId) {
+      const feedbackKey = `feedback-submitted-${levelId}`;
+      const submitted = localStorage.getItem(feedbackKey) === "true";
+      setFeedbackSubmitted(submitted);
+    }
+  }, [levelId]);
+
   if (isLoadingSection) {
     return (
       <div className="container py-8 space-y-6">
@@ -62,7 +69,6 @@ const SectionDetails = () => {
     );
   }
 
-  // Error state
   if (isSectionError || !section || !user) {
     return (
       <div className="container py-8">
@@ -77,7 +83,6 @@ const SectionDetails = () => {
     );
   }
 
-  // Check if this is the last section in the level
   const isLastSection = sections?.length === section.order;
 
   const handleVideoComplete = async () => {
@@ -105,33 +110,31 @@ const SectionDetails = () => {
     const updatedUser = await getUser().unwrap();
     dispatch(setUser(updatedUser));
     setHasWatched(true);
- 
-    if (isLastSection) {
-      setShowQuestionnaire(true);
-    }
   };
 
   const handleFeedbackSubmit = (feedback: FeedbackData) => {
-    // TODO: Send feedback to backend
     console.log("Feedback submitted:", feedback);
- 
 
-     toast.success("شكراً لك!", {
+    const feedbackKey = `feedback-submitted-${levelId}`;
+    localStorage.setItem(feedbackKey, "true");
+    setFeedbackSubmitted(true);
+
+    toast.success("شكراً لك!", {
       description: "تم إرسال تقييمك بنجاح. نقدر وقتك وملاحظاتك القيمة.",
       duration: 4000,
     });
   };
 
   const handleSkipFeedback = () => {
-    setShowQuestionnaire(false);
+    const feedbackKey = `feedback-submitted-${levelId}`;
+    localStorage.setItem(feedbackKey, "true");
+    setFeedbackSubmitted(true);
   };
 
   const handleNext = () => {
     if (isLastSection) {
-      // If it's the last section, go back to the level page
       router.push(`/levels/${section.level._id}`);
     } else {
-      // Find the next section in the level
       const nextSection = sections?.find((s) => s.order === section.order + 1);
       if (nextSection) {
         router.push(`/levels/${levelId}/sections/${nextSection._id}`);
@@ -141,7 +144,6 @@ const SectionDetails = () => {
 
   return (
     <div className="container py-8 space-y-6">
-      {/* Header */}
       <div className="flex items-center justify-between">
         <div className="space-y-1">
           <div className="flex items-center gap-2">
@@ -158,14 +160,14 @@ const SectionDetails = () => {
             Level:{" "}
             <Link
               href={`/levels/${section.level._id}`}
-              className="hover:underline">
+              className="hover:underline"
+            >
               {section.level.name}
             </Link>
           </p>
         </div>
       </div>
 
-      {/* Video Player Card */}
       <div className="space-y-2 flex flex-col">
         <Card className="overflow-hidden">
           <CardContent className="p-0">
@@ -185,15 +187,13 @@ const SectionDetails = () => {
         </Card>
         <Button
           className="ml-auto"
-          onClick={() =>
-            downloadCloudinaryVideo(section.videoId, section.name)
-          }>
+          onClick={() => downloadCloudinaryVideo(section.videoId, section.name)}
+        >
           <Download />
           Download Video
         </Button>
       </div>
 
-      {/* Description Card */}
       <Card>
         <CardHeader>
           <CardTitle>Section Description</CardTitle>
@@ -204,15 +204,14 @@ const SectionDetails = () => {
           </p>
         </CardContent>
       </Card>
- 
-      {isLastSection && showQuestionnaire && (hasWatched || isCompleted) && (
+
+      {isLastSection && (hasWatched || isCompleted) && !feedbackSubmitted && (
         <FeedbackQuestionnaire
           onSubmit={handleFeedbackSubmit}
           onSkip={handleSkipFeedback}
         />
       )}
 
-      {/* Navigation */}
       <div className="flex justify-between items-center pt-4">
         <Link href={`/levels/${section.level._id}`}>
           <Button variant="outline">
@@ -224,7 +223,8 @@ const SectionDetails = () => {
         <Button
           onClick={handleNext}
           disabled={!hasWatched && !isCompleted}
-          className="group">
+          className="group"
+        >
           {(hasWatched || isCompleted) && (
             <Check className="mr-2 h-4 w-4 text-green-500" />
           )}
@@ -233,7 +233,6 @@ const SectionDetails = () => {
         </Button>
       </div>
 
-      {/* Locked State Overlay */}
       {!hasWatched && !isCompleted && (
         <Alert className="mt-4">
           <AlertCircle className="h-4 w-4" />
