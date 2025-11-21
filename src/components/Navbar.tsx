@@ -68,7 +68,7 @@ export const Navbar: React.FC = () => {
 						<Image
 							src="/logo.jpeg"
 							alt="Zyad Logo"
-							width={60}
+							width={100}
 							height={60}
 							className="object-contain"
 						/>
