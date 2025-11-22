@@ -49,7 +49,6 @@ const LoginForm: React.FC = () => {
 	return (
 		<Form {...form}>
 			<form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-				{/* eslint-disable-next-line @typescript-eslint/no-explicit-any*/}
 				{error && <ErrorMessage message={(error as any)?.data?.message} />}
 				<FormField
 					control={form.control}
