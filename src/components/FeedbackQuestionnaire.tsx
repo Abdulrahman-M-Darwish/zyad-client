@@ -5,7 +5,9 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
-import { CheckCircle2, Star } from "lucide-react";
+import { Textarea } from "@/components/ui/textarea";
+import { CheckCircle2, Star, Loader2 } from "lucide-react";
+import { toast } from "sonner";
 
 interface FeedbackQuestionnaireProps {
   onSubmit?: (feedback: FeedbackData) => void;
@@ -26,6 +28,7 @@ export const FeedbackQuestionnaire = ({
   onSkip,
 }: FeedbackQuestionnaireProps) => {
   const [submitted, setSubmitted] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [feedback, setFeedback] = useState<FeedbackData>({
     improvement: "",
     followUp: "",
@@ -35,9 +38,30 @@ export const FeedbackQuestionnaire = ({
     suggestions: "",
   });
 
-  const handleSubmit = () => {
-    onSubmit?.(feedback);
-    setSubmitted(true);
+  const handleSubmit = async () => {
+    setIsSubmitting(true);
+    try {
+      const response = await fetch("/api/send-feedback", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(feedback),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to send feedback");
+      }
+
+      toast.success("تم إرسال التقييم بنجاح!");
+      onSubmit?.(feedback);
+      setSubmitted(true);
+    } catch (error) {
+      console.error("Error submitting feedback:", error);
+      toast.error("حدث خطأ أثناء إرسال التقييم. يرجى المحاولة مرة أخرى.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   if (submitted) {
@@ -220,14 +244,14 @@ export const FeedbackQuestionnaire = ({
           <Label htmlFor="suggestions" className="text-base font-medium">
             ٦. هل لديك أي اقتراحات لتحسين الخدمة؟
           </Label>
-          <textarea
+          <Textarea
             id="suggestions"
             value={feedback.suggestions}
             onChange={(e) =>
               setFeedback({ ...feedback, suggestions: e.target.value })
             }
             placeholder="اكتب اقتراحاتك هنا..."
-            className="w-full min-h-[100px] p-3 rounded-lg border-2 border-border focus:border-primary focus:outline-none resize-none"
+            className="min-h-[100px] resize-none"
             dir="rtl"
           />
         </div>
@@ -238,6 +262,7 @@ export const FeedbackQuestionnaire = ({
             className="flex-1"
             size="lg"
             disabled={
+              isSubmitting ||
               !feedback.improvement ||
               !feedback.followUp ||
               !feedback.exercisesClarity ||
@@ -245,10 +270,22 @@ export const FeedbackQuestionnaire = ({
               !feedback.wouldRecommend
             }
           >
-            إرسال التقييم
+            {isSubmitting ? (
+              <>
+                <Loader2 className="h-4 w-4 animate-spin ml-2" />
+                جاري الإرسال...
+              </>
+            ) : (
+              "إرسال التقييم"
+            )}
           </Button>
           {onSkip && (
-            <Button onClick={onSkip} variant="outline" size="lg">
+            <Button
+              onClick={onSkip}
+              variant="outline"
+              size="lg"
+              disabled={isSubmitting}
+            >
               تخطي
             </Button>
           )}
