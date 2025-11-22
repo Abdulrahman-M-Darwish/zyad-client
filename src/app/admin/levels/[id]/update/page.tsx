@@ -12,6 +12,7 @@ import {
 	FormLabel,
 	FormMessage,
 	Input,
+	Textarea,
 	Card,
 	CardHeader,
 	CardTitle,
@@ -143,7 +144,7 @@ const UpdateLevel = () => {
 										<FormItem>
 											<FormLabel>Description</FormLabel>
 											<FormControl>
-												<Input placeholder="Optional description" {...field} />
+												<Textarea placeholder="Optional description" {...field} />
 											</FormControl>
 											<FormMessage />
 										</FormItem>

@@ -11,6 +11,7 @@ export * from "./ui/dropdown-menu";
 export * from "./ui/select";
 export * from "./ui/form";
 export * from "./ui/input";
+export * from "./ui/textarea";
 export * from "./ui/label";
 export * from "./ui/separator";
 export * from "./ui/sheet";
