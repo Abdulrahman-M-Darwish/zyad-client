@@ -160,7 +160,7 @@ export async function POST(request: NextRequest) {
       to: ["messizeyad10@gmail.com"],
       subject: `📋 تقييم جديد - ${overallRating} نجوم`,
       html: htmlContent,
-    });
+    });   
 
     return NextResponse.json(
       { message: "Feedback sent successfully", data },
