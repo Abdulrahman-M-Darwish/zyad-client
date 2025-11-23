@@ -86,7 +86,7 @@ const SectionDetails = () => {
 		sections?.[sections.length - 1]?.order === section.order;
 
 	const handleVideoComplete = async () => {
-		if (isCompleted) return;
+		// if (isCompleted) return;
 
 		await updateUser({
 			id: user._id,
