@@ -4,32 +4,32 @@ import { NextRequest, NextResponse } from "next/server";
 const resend = new Resend(process.env.RESEND_API_KEY);
 
 export async function POST(request: NextRequest) {
-  try {
-    const body = await request.json();
-    const {
-      improvement,
-      followUp,
-      exercisesClarity,
-      overallRating,
-      wouldRecommend,
-      suggestions,
-    } = body;
+	try {
+		const body = await request.json();
+		const {
+			improvement,
+			followUp,
+			exercisesClarity,
+			overallRating,
+			wouldRecommend,
+			suggestions,
+		} = body;
 
-    const improvementLabels: Record<string, string> = {
-      significant: "نعم بشكل كبير",
-      slight: "تحسن بسيط",
-      none: "لم أشعر بتحسن",
-      worse: "ساءت الحالة",
-    };
+		const improvementLabels: Record<string, string> = {
+			significant: "نعم بشكل كبير",
+			slight: "تحسن بسيط",
+			none: "لم أشعر بتحسن",
+			worse: "ساءت الحالة",
+		};
 
-    const yesNoLabels: Record<string, string> = {
-      yes: "نعم",
-      somewhat: "إلى حد ما",
-      no: "لا",
-      maybe: "ربما",
-    };
+		const yesNoLabels: Record<string, string> = {
+			yes: "نعم",
+			somewhat: "إلى حد ما",
+			no: "لا",
+			maybe: "ربما",
+		};
 
-    const htmlContent = `
+		const htmlContent = `
       <!DOCTYPE html>
       <html dir="rtl" lang="ar">
       <head>
@@ -109,7 +109,9 @@ export async function POST(request: NextRequest) {
           <div class="content">
             <div class="question">
               <div class="question-title">١. هل شعرت بتحسن بعد الجلسات؟</div>
-              <div class="answer">${improvementLabels[improvement] || improvement}</div>
+              <div class="answer">${
+								improvementLabels[improvement] || improvement
+							}</div>
             </div>
 
             <div class="question">
@@ -119,59 +121,67 @@ export async function POST(request: NextRequest) {
 
             <div class="question">
               <div class="question-title">٣. هل كانت التمارين المنزلية واضحة وسهلة التطبيق؟</div>
-              <div class="answer">${yesNoLabels[exercisesClarity] || exercisesClarity}</div>
+              <div class="answer">${
+								yesNoLabels[exercisesClarity] || exercisesClarity
+							}</div>
             </div>
 
             <div class="question">
               <div class="question-title">٤. ما تقييمك العام للخدمة؟</div>
               <div class="answer">
-                <div class="stars">${"★".repeat(overallRating)}${"☆".repeat(5 - overallRating)}</div>
+                <div class="stars">${"★".repeat(overallRating)}${"☆".repeat(
+			5 - overallRating
+		)}</div>
                 <div style="margin-top: 5px;">${overallRating} من 5</div>
               </div>
             </div>
 
             <div class="question">
               <div class="question-title">٥. هل ستوصي الآخرين بالعلاج هنا؟</div>
-              <div class="answer">${yesNoLabels[wouldRecommend] || wouldRecommend}</div>
+              <div class="answer">${
+								yesNoLabels[wouldRecommend] || wouldRecommend
+							}</div>
             </div>
 
-            ${suggestions
-        ? `
+            ${
+							suggestions
+								? `
             <div class="question">
               <div class="question-title">٦. اقتراحات لتحسين الخدمة:</div>
               <div class="answer">${suggestions}</div>
             </div>
             `
-        : ""
-      }
+								: ""
+						}
           </div>
 
           <div class="footer">
             <p>تم الإرسال من نظام إدارة التقييمات - Zyad Platform</p>
-            <p>${new Date().toLocaleString("ar-EG", { timeZone: "Africa/Cairo" })}</p>
+            <p>${new Date().toLocaleString("ar-EG", {
+							timeZone: "Africa/Cairo",
+						})}</p>
           </div>
         </div>
       </body>
       </html>
     `;
 
-    const data = await resend.emails.send({
-      from: "Zyad Platform <onboarding@resend.dev>",
-      to: ["messizeyad10@gmail.com"],
-      subject: `📋 تقييم جديد - ${overallRating} نجوم`,
-      html: htmlContent,
-    });   
+		const data = await resend.emails.send({
+			from: "Zyad Platform <onboarding@resend.dev>",
+			to: ["messizeyad10@gmail.com"],
+			subject: `📋 تقييم جديد - ${overallRating} نجوم`,
+			html: htmlContent,
+		});
 
-    return NextResponse.json(
-      { message: "Feedback sent successfully", data },
-      { status: 200 }
-    );
-  } catch (error) {
-    console.error("Error sending feedback:", error);
-    return NextResponse.json(
-      { error: "Failed to send feedback" },
-      { status: 500 }
-    );
-  }
-}   
-  
+		return NextResponse.json(
+			{ message: "Feedback sent successfully", data },
+			{ status: 200 }
+		);
+	} catch (error) {
+		console.error("Error sending feedback:", error);
+		return NextResponse.json(
+			{ error: "Failed to send feedback" },
+			{ status: 500 }
+		);
+	}
+}
