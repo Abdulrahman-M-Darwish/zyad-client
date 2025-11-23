@@ -84,9 +84,6 @@ const SectionDetails = () => {
 	}
 	const isLastSection =
 		sections?.[sections.length - 1]?.order === section.order;
-	console.log([
-		...new Set([...user.completedSections.map((s) => s._id), section._id]),
-	]);
 
 	const handleVideoComplete = async () => {
 		if (isCompleted) return;
