@@ -88,6 +88,7 @@ const LevelDetails = () => {
 	const isCompleted = user.completedLevels?.some(
 		(completedLevel) => completedLevel._id === level._id
 	);
+	console.log(user.completedLevels, level._id);
 
 	// Sort sections by order
 	const sortedSections = sections?.toSorted((a, b) => a.order - b.order) || [];

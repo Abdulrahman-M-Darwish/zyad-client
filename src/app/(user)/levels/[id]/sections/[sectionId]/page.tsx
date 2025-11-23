@@ -82,9 +82,11 @@ const SectionDetails = () => {
 			</div>
 		);
 	}
-
 	const isLastSection =
 		sections?.[sections.length - 1]?.order === section.order;
+	console.log([
+		...new Set([...user.completedSections.map((s) => s._id), section._id]),
+	]);
 
 	const handleVideoComplete = async () => {
 		if (isCompleted) return;
@@ -93,8 +95,10 @@ const SectionDetails = () => {
 			id: user._id,
 			data: {
 				completedSections: [
-					...(user.completedSections.map((s) => s._id) || []),
-					section._id,
+					...new Set([
+						...user.completedSections.map((s) => s._id),
+						section._id,
+					]),
 				],
 				...(isLastSection
 					? {
