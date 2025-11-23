@@ -187,11 +187,11 @@ const LevelDetails = () => {
 									isLocked && "pointer-events-none opacity-50"
 								)}
 							>
-								<Card className="transition-colors hover:bg-accent">
+								<Card className="transition-colors hover:bg-accent hover:text-accent-foreground group">
 									<CardContent className="flex items-center justify-between p-6">
 										<div className="space-y-1">
 											<h3 className="font-semibold">{section.name}</h3>
-											<p className="text-sm text-muted-foreground">
+											<p className="text-sm text-muted-foreground group-hover:text-accent-foreground">
 												{section.description || "No description available"}
 											</p>
 										</div>
